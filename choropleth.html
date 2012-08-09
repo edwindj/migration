@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>U.S. Unemployment by County</title>
+    <script type="text/javascript" src="js/d3.v2.js"></script>
+    <link type="text/css" rel="stylesheet" href="choropleth.css"/>
+    <link type="text/css" rel="stylesheet" href="colorbrewer.css"/>
+  </head>
+  <body>
+    <div id="chart"></div>
+    <script type="text/javascript">
+
+var data; // loaded asynchronously
+var values;
+
+var path = d3.geo.path();
+
+var svg = d3.select("#chart")
+  .append("svg");
+
+var counties = svg.append("g")
+    .attr("id", "counties")
+    .attr("class", "Blues");
+
+var states = svg.append("g")
+    .attr("id", "states");
+
+var gemeenten;
+var width = 800;
+var height = 800;
+
+function highlight(d,i){
+  var top = d3.select("#top");
+  top.attr("xlink:href", "#"+ d.properties.id);
+  top.attr("title", d.properties.name);
+}
+
+function unhighlight(d,i){
+  var top = d3.select("#top");
+  //top.attr("xlink:href", "");
+}
+
+  
+d3.geo.asIs = function(features){
+
+    var xScale = d3.scale.linear()
+      , yScale = d3.scale.linear()
+      , width = 800
+      , height = 600
+      , features = features
+      ;
+      
+  var asIs = function(coordinates){
+      return [xScale(coordinates[0]), yScale(coordinates[1])];
+  }
+  
+  function rescale(){
+     var bounds = d3.geo.bounds(features);
+     
+     var xd = [bounds[0][0], bounds[1][0]];
+     var yd = [bounds[1][0], bounds[1][1]];
+     
+     var w = xd[1] - xd[0];
+     var h = yd[1] - yd[0];
+     
+     var aspect = h/w;
+     
+     w = width;
+     h = aspect * width;
+
+     if (h > height){
+         w = height / aspect;
+         h = height;
+     }
+
+     xScale = d3.scale.linear()
+         .domain(xd)
+         .range([0,w])
+         ;
+
+     yScale = d3.scale.linear()
+         .domain(yd)
+         .range([h,0])
+         ;
+      
+     return asIs;
+  }
+    
+  asIs.width = function(_){
+     if (!arguments.length){
+        return width;
+     }
+     width = _
+     return rescale();
+  }
+  
+  asIs.height = function(_){
+     if (!arguments.length){
+        return height;
+     }
+     height = _
+     return rescale();
+  }
+  
+  return rescale();
+}
+
+
+d3.json("json/gemeenten.json", function(json) {
+  gemeenten = json;
+
+  path.projection(d3.geo.asIs(gemeenten).width(width).height(height));
+//  path.projection(d3.geo.asIs(gemeenten));
+  
+  counties.selectAll("path")
+      .data(json.features)
+    .enter().append("path")
+      .attr("class", data ? quantize : null)
+      .attr("d", path)
+      .attr("title", function(d){return d.properties.name;})
+      .attr("id", function(d){return d.properties.id;})
+      .on("mouseenter", highlight)
+      .on("mouseout", unhighlight)
+      ;
+  
+  counties.append("use").attr("id", "top");
+});
+ 
+ d3.csv("json/gemeenten_data.csv", function(csv) {
+    data = csv;
+    values = data.map(function(d){return +d.P_TURKIJE;});
+    
+    var r = d3.extent(values);
+    
+    var classes = d3.range(9).map(function(d){return "q"+d+"-9";})
+    //console.log(classes);
+    var scale = d3.scale.quantize(0,r[1], classes);
+    
+    counties.selectAll("path")
+      .attr("class", scale);
+});
+
+
+function quantize(d,i) {
+  return "q" + Math.min(8, ~~(data[i].P_TURKIJE * 9 / 12)) + "-9";
+}
+
+</script>
+  </body>
+</html>
