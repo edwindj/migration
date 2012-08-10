@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>Dutch Migration</title>
+    <script type="text/javascript" src="js/d3.v2.js"></script>
+    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.22.min.js"></script>
+    <script type="text/javascript" src="js/jquery.layout.js"></script>
+    
+	<link type="text/css" rel="stylesheet" href="css/choropleth.css"/>
+    <link type="text/css" rel="stylesheet" href="css/colorbrewer.css"/>
+	<link type="text/css" rel="stylesheet" href="css/smoothness/jquery.ui-1.8.22.css"/>
+	<link type="text/css" rel="stylesheet" href="css/jquery.layout.css"/>
+    
+  </head>
+  <body>
+  <div class="ui-layout-center">Center</div>
+<div class="ui-layout-north">North</div>
+<div class="ui-layout-south">South</div>
+<div class="ui-layout-east">East</div>
+<div class="ui-layout-west">West</div>
+  
+  <script type="text/javascript">
+  
+  $(function(){
+	$('body').layout({applyDefaultStyles: true});
+	
+	$(".ui-layout-toggler-west .ui-layout-toggler-east")
+		.addClass("ui-icon-grip-dotted-vertical"); 
+
+    $(".ui-layout-toggler-north .ui-layout-toggler-south") 
+        .addClass("ui-icon-grip-dotted-horizontal"); 
+  })
+  </script>
+  </body>
+</html>
