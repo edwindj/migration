@@ -6,6 +6,12 @@ svg {
 
 #counties path {
   stroke: #fff;
+  fill: silver;
+  stroke-width: .25px;
+}
+
+#chart path {
+  stroke: #fff;
   stroke-width: .25px;
 }
 
